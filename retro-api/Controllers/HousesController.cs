@@ -1,39 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using retro_api.Models;
 
 namespace retro_api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class HousesController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+ 
+        private readonly ILogger<HousesController> _logger;
+        private readonly IConfiguration _config;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public HousesController(ILogger<HousesController> logger)
         {
             _logger = logger;
         }
 
+        [Route("")]
+        [Route("all")]
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+
+        public ActionResult<List<House>> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+           var houses = HouseModel.GetHouses();
+
+            if (houses == null)
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+                return StatusCode(500);
+            }
+            else
+            {
+                return houses;
+            }
+         
+        }
+    }
+
+    public class CustomError : Exception
+    {
+        public HttpStatusCode errorCode;
+        public CustomError(HttpStatusCode errCode)
+        {
+            errorCode = errCode;
         }
     }
 }

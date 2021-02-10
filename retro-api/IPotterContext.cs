@@ -1,7 +1,10 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore;
+
 namespace retro_api
 {
-    public interface IPotterInterface
+    public interface IPotterContext
     {
+        public DbSet<House> houses { get; set; }
     }
 }
