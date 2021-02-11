@@ -10,11 +10,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using retro_api.Interfaces;
+using retro_api.Models;
 
 namespace retro_api
 {
     public class Startup
     {
+        // TODO
+        // service registry
+        // 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,6 +30,11 @@ namespace retro_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // These essentially creates a PotterContext & HouseModel on startup
+            // and supplies it to the whole app wherever IPotterContext or IHouseModel
+            // are being used.
+            services.AddSingleton<IPotterContext, PotterContext>();
+            services.AddSingleton<IHousesModel, HouseModel>();
             services.AddControllers();
         }
 
