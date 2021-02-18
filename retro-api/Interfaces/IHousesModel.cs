@@ -6,6 +6,8 @@ namespace retro_api.Interfaces
     public interface IHousesModel
     {
         public List<House> GetHouses();
-        public List<House> GetHouseById(string id);
+        public House GetHouseById(int id);
+        public House InsertHouse(House newHouse);
+        public bool DeleteHouse(int id);
     }
 }

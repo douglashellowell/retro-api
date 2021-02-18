@@ -18,13 +18,5 @@ namespace retro_api
 
         [Column("animal")]
         public string Animal { get; set; }
-
-        //public House(int house_id, string house_name, string founder, string animal)
-        //{
-        //    Id = house_id;
-        //    House_name = house_name;
-        //    Founder = founder;
-        //    Animal = animal;
-        //}
     }
 }

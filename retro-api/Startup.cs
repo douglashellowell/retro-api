@@ -35,6 +35,7 @@ namespace retro_api
             // are being used.
             services.AddSingleton<IPotterContext, PotterContext>();
             services.AddSingleton<IHousesModel, HouseModel>();
+            services.AddSingleton<IStudentsModel, StudentsModel>();
             services.AddControllers();
         }
 

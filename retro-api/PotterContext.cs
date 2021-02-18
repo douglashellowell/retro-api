@@ -14,6 +14,7 @@ namespace retro_api
 
         // db fields
         public DbSet<House> houses { get; set; }
+        public DbSet<Student> students { get; set; }
 
         public PotterContext(IConfiguration config)
         {

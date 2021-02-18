@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using System.Web;
+using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using retro_api.Interfaces;
-using retro_api.Models;
 
 namespace retro_api.Controllers
 {
@@ -18,30 +16,26 @@ namespace retro_api.Controllers
     {
 
         private readonly ILogger<HousesController> _logger;
-        //private readonly IConfiguration _config;
 
-        private IPotterContext _potterContext;
         private IHousesModel _houseModel;
+        private IStudentsModel _studentsModel;
 
-        public HousesController(ILogger<HousesController> logger, IConfiguration config, IHousesModel housesModel)
+        public HousesController(ILogger<HousesController> logger, IConfiguration config, IHousesModel housesModel, IStudentsModel studentsModel)
         {
             _logger = logger;
-            //_config = config;
-            //_potterContext = new PotterContext();
             _houseModel = housesModel;
+            _studentsModel = studentsModel;
         }
 
         [Route("")]
         [HttpGet]
         public ActionResult<List<House>> GetAllHouses()
         {
-            //string host = _config.GetValue<string>("dbConfig:host");
-            //string database = _config.GetValue<string>("");
             var houses = _houseModel.GetHouses();
 
             if (houses == null)
             {
-                return StatusCode(500);
+                return StatusCode(500, new ApiResponse(500));
             }
             else
             {
@@ -50,28 +44,90 @@ namespace retro_api.Controllers
 
         }
 
+        [Route("")]
+        [HttpPost]
+        public ActionResult<House> PostHouse(House newHouse)
+        {
+            // TODO need error handling
+           var insertedHouse = _houseModel.InsertHouse(newHouse);
+
+            if(insertedHouse == null)
+            {
+                return BadRequest(new ApiResponse(400, "post failed :O"));
+            }
+            else
+            {
+                return insertedHouse;
+            }
+        }
+
+
         [Route("{id}")]
         [HttpGet]
-        public ActionResult<List<House>> GetHouseById(string id)
+        public ActionResult<House> GetHouseById(int id)
         {
             var house = _houseModel.GetHouseById(id);
 
-            if(house.Count == 0)
+            if(house == null)
             {
-                return StatusCode(404);
-            } else
+                var error = new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("House does not exist :(", System.Text.Encoding.UTF8, "text/plain"),
+                    StatusCode = HttpStatusCode.NotFound
+                };
+                return NotFound(new ApiResponse(404, $"House {id} dun exit"));
+            }
+            else
             {
                 return house;
             }
         }
-    }
 
-    public class CustomError : Exception
-    {
-        public HttpStatusCode errorCode;
-        public CustomError(HttpStatusCode errCode)
+        [Route("{id}")]
+        [HttpDelete]
+        public ActionResult DeleteHouseById(int id)
         {
-            errorCode = errCode;
+            bool houseHasBeenDeleted =_houseModel.DeleteHouse(id);
+
+            if (houseHasBeenDeleted)
+            {
+                return StatusCode(204);
+            }
+            else
+            {
+                return NotFound(new ApiResponse(404, $"House {id} dun eggist"));
+            }
+        }
+
+        [Route("students")]
+        [HttpGet]
+        public ActionResult<List<Student>> GetAllStudents(string id)
+        {
+            var students = _studentsModel.SelectAllStudents();
+            if(students == null)
+            {
+                return NotFound(new ApiResponse(404, "there are no students... :S"));
+            }
+            else
+            {
+            return students;
+            }
+        }
+
+        [Route("{id}/students")]
+        [HttpGet]
+        public ActionResult<List<Student>> GetStudentsByHouseId(int id)
+        {
+            var students = _studentsModel.SelectStudentsByHouseId(id);
+            if (students.Count == 0)
+            {
+                return NotFound(new ApiResponse(404, $"house {id} isn't a thing"));
+            }
+            else
+            {
+                return students;
+            }
         }
     }
+
 }
