@@ -47,6 +47,8 @@ namespace retro_api
                 app.UseDeveloperExceptionPage();
             }
 
+            //app.UseStatusCodePages();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();

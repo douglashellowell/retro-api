@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using retro_api.Interfaces;
+using retro_api.Models;
 
 namespace retro_api.Controllers
 {
@@ -46,12 +47,13 @@ namespace retro_api.Controllers
 
         [Route("")]
         [HttpPost]
-        public ActionResult<House> PostHouse(House newHouse)
+        public ActionResult<House> PostHouse(HouseRequest newHouse)
         {
             // TODO need error handling
-           var insertedHouse = _houseModel.InsertHouse(newHouse);
 
-            if(insertedHouse == null)
+            var insertedHouse = _houseModel.InsertHouse(newHouse);
+
+            if (insertedHouse == null)
             {
                 return BadRequest(new ApiResponse(400, "post failed :O"));
             }
@@ -68,7 +70,7 @@ namespace retro_api.Controllers
         {
             var house = _houseModel.GetHouseById(id);
 
-            if(house == null)
+            if (house == null)
             {
                 var error = new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
@@ -87,7 +89,7 @@ namespace retro_api.Controllers
         [HttpDelete]
         public ActionResult DeleteHouseById(int id)
         {
-            bool houseHasBeenDeleted =_houseModel.DeleteHouse(id);
+            bool houseHasBeenDeleted = _houseModel.DeleteHouse(id);
 
             if (houseHasBeenDeleted)
             {
@@ -104,13 +106,13 @@ namespace retro_api.Controllers
         public ActionResult<List<Student>> GetAllStudents(string id)
         {
             var students = _studentsModel.SelectAllStudents();
-            if(students == null)
+            if (students == null)
             {
                 return NotFound(new ApiResponse(404, "there are no students... :S"));
             }
             else
             {
-            return students;
+                return students;
             }
         }
 
@@ -127,6 +129,15 @@ namespace retro_api.Controllers
             {
                 return students;
             }
+        }
+
+        [Route("{id}/students")]
+        [HttpPost]
+        public ActionResult<Student> PostStudent(int id, StudentRequest newStudent)
+        {
+            Student insertedStudent = _studentsModel.InsertStudent(id, newStudent);
+
+            return insertedStudent;
         }
     }
 

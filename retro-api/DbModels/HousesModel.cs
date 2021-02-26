@@ -40,7 +40,7 @@ namespace retro_api.Models
             }
         }
 
-        public House InsertHouse(House newHouse)
+        public House InsertHouse(HouseRequest newHouse)
         {
             // try catch?
             // if house has null, db has NON-NULL
@@ -49,15 +49,25 @@ namespace retro_api.Models
             // remove id from incoming object?
             // create RequestHouse.cs
             // Add throws error on duplicate id
+            House houseToInsert = newHouse.ToHouse();
+            //map HouseRequest -> House
+            // new House(newHouse.name, newHouse.founder, ne)
+
+            // 🤩
+            // create method to HouseRequest (.toHouse())
+            // do via binding
+
+            // (ignore for now...)
+            // 'automapper' package - create profiles that do this job for me
             try
             {
-            var EntryEntity = _potterContext.houses.Add(newHouse);
+            var EntryEntity = _potterContext.houses.Add(houseToInsert);
             // ? use int from SaveChanges?
             _potterContext.SaveChanges();
-            return newHouse;
+            return houseToInsert;
             } catch (Exception err)
             {
-                return null;
+                throw err;
             }
         }
 

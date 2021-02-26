@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using retro_api.Interfaces;
 
 namespace retro_api.Models
@@ -13,6 +15,8 @@ namespace retro_api.Models
         {
             _potterContext = potterContext;
         }
+
+      
 
         public List<Student> SelectAllStudents()
         {
@@ -39,6 +43,27 @@ namespace retro_api.Models
                 return null;
             }
 
+        }
+
+          public Student InsertStudent(int houseId, StudentRequest newStudent)
+        {
+            Student studentToInsert = newStudent.ToStudent(houseId);
+            try
+            {
+            var result = _potterContext.students.Add(studentToInsert);
+
+
+            var saves =  _potterContext.SaveChanges();
+
+            return studentToInsert;
+
+            } catch (DbUpdateException err)
+            {
+
+                var code = err.InnerException;
+
+                throw err;
+            }
         }
     }
 }
